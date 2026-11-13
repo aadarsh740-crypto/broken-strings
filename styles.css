@@ -194,10 +194,7 @@ h2 em { font-style: normal; font-family: var(--script); font-size: .62em; vertic
 .stats b { display: block; font-family: var(--display); font-weight: 400; font-size: clamp(2.6rem, 5vw, 4rem); line-height: 1; color: var(--black); }
 .stats span { font-size: .75rem; letter-spacing: .2em; text-transform: uppercase; }
 
-.members { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; padding-bottom: 2.5rem; }
-.member-art-duo { grid-template-rows: 1fr 1fr; gap: 4%; padding: 12% 10%; }
-.member-art-duo svg.duo-drum { width: 78%; height: 100%; }
-.member-art-duo svg.duo-keys { width: 78%; height: 100%; }
+.members { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.2rem; padding-bottom: 2.5rem; }
 .member { background: var(--black); padding: 1.4rem; position: relative; overflow: hidden; transition: transform .35s; --bg-for-svg: var(--black); }
 .member:nth-child(even) { transform: translateY(2.5rem); }
 .member:hover { transform: translateY(-6px) rotate(-1deg); }
@@ -441,10 +438,6 @@ h2 em { font-style: normal; font-family: var(--script); font-size: .62em; vertic
 @media (max-width: 560px) {
   .albums { grid-template-columns: 1fr; }
   .members { grid-template-columns: 1fr 1fr; gap: .8rem; }
-  .member:nth-child(3) { grid-column: 1 / -1; }
-  .member:nth-child(3) .member-art { aspect-ratio: 2 / 1; grid-template-rows: none; grid-template-columns: 1fr 1fr; padding: 8% 6%; }
-  .member:nth-child(3) .member-art svg { width: 90%; }
-  .member:nth-child(3) .member-art::before { display: none; }
   .members { padding-bottom: 0; }
   .member:nth-child(even), .member.reveal.in:nth-child(even) { transform: none; }
   .member:nth-child(even):hover { transform: translateY(-6px) rotate(1deg); }
@@ -467,4 +460,10 @@ h2 em { font-style: normal; font-family: var(--script); font-size: .62em; vertic
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
   html { scroll-behavior: auto; }
+}
+/* Tablets: the members row spans full width, so show all four side by side. */
+@media (min-width: 561px) and (max-width: 1024px) {
+  .members { grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+  .member { padding: 1rem; }
+  .member h3 { font-size: 1.5rem; }
 }
