@@ -38,22 +38,92 @@
   );
   $$("main section[id]").forEach((s) => sectionObserver.observe(s));
 
-  /* ---------- Reveal on scroll + counters ---------- */
+  /* ---------- Scroll animations: reveal on scroll + counters ---------- */
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // Give items in a group increasing delays so they appear one after another.
+  const stagger = (els, stepMs, startMs = 0) =>
+    els.forEach((el, i) => el.style.setProperty("--d", `${startMs + i * stepMs}ms`));
+
+  // Section titles get the colour-wipe effect: wrap their text so it can fade in behind the wipe.
+  $$(".section-head h2, .contact-info h2").forEach((h) => {
+    h.innerHTML = `<span class="wipe-text">${h.innerHTML}</span>`;
+    h.classList.add("wipe");
+  });
+
+  // Once an element has finished arriving, drop its reveal styles so its own hover effects work again.
+  const settle = (el) => {
+    const delay = parseFloat(el.style.getPropertyValue("--d")) || 0;
+    setTimeout(() => {
+      el.classList.remove("reveal");
+      el.style.removeProperty("--d");
+    }, delay + 1250);
+  };
+
   const revealObserver = new IntersectionObserver(
     (entries) => {
       entries.forEach((e) => {
         if (!e.isIntersecting) return;
         e.target.classList.add("in");
         $$("[data-auto]", e.target).forEach(countUp);
+        if (e.target.classList.contains("reveal")) settle(e.target);
         revealObserver.unobserve(e.target);
       });
     },
-    { threshold: 0.15 }
+    { threshold: 0.15, rootMargin: "0px 0px -6% 0px" }
   );
-  $$(".reveal").forEach((el, i) => {
-    el.style.transitionDelay = `${(i % 4) * 90}ms`;
-    revealObserver.observe(el);
-  });
+
+  stagger($$(".hero-content > .reveal"), 120, 100);
+  stagger($$(".members > .member"), 120);
+  stagger($$(".tracklist li"), 140, 250);
+  stagger($$(".stats > div"), 110, 300);
+  $$(".reveal").forEach((el) => revealObserver.observe(el));
+
+  /* ---------- Scroll-linked effects: progress line + parallax ---------- */
+  const progress = document.createElement("div");
+  progress.className = "scroll-progress";
+  progress.setAttribute("aria-hidden", "true");
+  document.body.appendChild(progress);
+
+  const hero = $(".hero");
+  const heroContent = $(".hero-content");
+  const heroVisual = $(".hero-visual");
+  const footerBig = $(".footer-big");
+  const contact = $(".contact");
+  const contactGuitar = $(".contact-guitar");
+  // How far (0 → 1) an element has travelled through the screen.
+  const travel = (el) => {
+    const r = el.getBoundingClientRect();
+    return Math.min(1, Math.max(0, (innerHeight - r.top) / (innerHeight + r.height)));
+  };
+
+  let fxQueued = false;
+  function scrollFx() {
+    fxQueued = false;
+    const y = window.scrollY;
+    const max = document.documentElement.scrollHeight - innerHeight;
+    progress.style.transform = `scaleX(${max > 0 ? Math.min(1, y / max) : 0})`;
+    if (reduceMotion) return;
+
+    // Hero: text drifts down and fades, artwork moves slower — a layered depth effect.
+    const h = hero.offsetHeight;
+    if (y <= h) {
+      const p = y / h;
+      heroContent.style.transform = `translate3d(0, ${y * 0.35}px, 0)`;
+      heroContent.style.opacity = String(Math.max(0, 1 - p * 1.3));
+      heroVisual.style.transform = `translate3d(0, ${y * 0.18}px, 0) scale(${1 - p * 0.1})`;
+    }
+    // Contact: the big guitar silhouette swings slowly as you scroll through.
+    const pc = travel(contact);
+    if (pc > 0 && pc < 1) contactGuitar.style.transform = `translate3d(0, ${(0.5 - pc) * 120}px, 0) rotate(${-40 + pc * 28}deg)`;
+    // Footer: the giant band name slides sideways.
+    const pf = travel(footerBig);
+    if (pf > 0) footerBig.style.transform = `translate3d(${(0.6 - pf) * 18}%, 0, 0)`;
+  }
+  const queueFx = () => { if (!fxQueued) { fxQueued = true; requestAnimationFrame(scrollFx); } };
+  window.addEventListener("scroll", queueFx, { passive: true });
+  window.addEventListener("resize", queueFx);
+  scrollFx();
 
   // Real numbers for the About stats, worked out from the page itself.
   const FORMED_YEAR = 2017;
@@ -272,6 +342,7 @@
         <p>${esc(s.info || "")}</p>
       </button>`;
   }).join("");
+  stagger($$(".session-card", grid), 120);
   $$(".session-card", grid).forEach((card) => {
     revealObserver.observe(card);
     card.addEventListener("click", () => {
