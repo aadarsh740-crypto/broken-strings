@@ -25,7 +25,7 @@
   burger.addEventListener("click", () => setMenu(!links.classList.contains("open")));
   $$("a", links).forEach((a) => a.addEventListener("click", () => setMenu(false)));
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") setMenu(false); });
-  window.matchMedia("(min-width: 861px)").addEventListener("change", (e) => { if (e.matches) setMenu(false); });
+  window.matchMedia("(min-width: 1101px)").addEventListener("change", (e) => { if (e.matches) setMenu(false); });
 
   const sectionObserver = new IntersectionObserver(
     (entries) => {
@@ -158,6 +158,94 @@
   $$(".tracklist li").forEach((li, i) => {
     $(".mini-play", li).addEventListener("click", () => play(li, $(".t", li).textContent, i));
   });
+
+  /* ---------- Our Sessions (videos) ----------
+     To add a video, fill in `video` with EITHER:
+       • a YouTube link  — e.g. "https://www.youtube.com/watch?v=XXXXXXXXXXX" or "https://youtu.be/XXXXXXXXXXX"
+       • a video file in the videos/ folder — e.g. "videos/garage-session.mp4"
+     `poster` (optional) is a cover image for video files, e.g. "videos/garage-session.jpg".
+     YouTube videos get their cover image automatically.
+     `focus` (optional) picks which part of the cover shows in the small card, e.g. "center 70%" to favour the lower part.
+     `icon` picks the placeholder drawing: mic, guitar, drum or keys.
+     Entries with an empty `video` show as "Coming soon". */
+  const SESSIONS = [
+    { title: "Ishq Mubarak ft. ADR", info: "Live session", video: "videos/ishq-mubarak.mp4", poster: "videos/ishq-mubarak.jpg", focus: "center", icon: "guitar" },
+    { title: "Sundariye Vaa ft. tm_shapp", info: "Live session", video: "videos/sundariye-vaa.mp4", poster: "videos/sundariye-vaa.jpg", focus: "center 72%", icon: "mic" },
+  ];
+
+  const youTubeId = (url) => {
+    const m = String(url).match(/(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/))([\w-]{11})/);
+    return m ? m[1] : null;
+  };
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const coverFor = (s) => {
+    const id = youTubeId(s.video);
+    if (id) return `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+    return s.poster || "";
+  };
+  // Blurred copy of the cover behind the player, so tall or very wide videos don't sit between plain black bars.
+  const backdrop = (src) => `<img class="player-backdrop" src="${esc(src)}" alt="" aria-hidden="true">`;
+  const placeholder = (s, label) =>
+    `<div class="ph-art"><svg><use href="#i-${esc(s.icon || "guitar")}"/></svg><span class="ph-label">${label}</span></div>`;
+
+  const player = $("#player");
+  const grid = $("#sessionGrid");
+  let currentSession = 0;
+
+  function showInPlayer(i, autoplay) {
+    const s = SESSIONS[i];
+    currentSession = i;
+    $("#playerTitle").textContent = s.title;
+    $("#playerInfo").textContent = s.info || "";
+    $("#playerCount").textContent = `${String(i + 1).padStart(2, "0")} / ${String(SESSIONS.length).padStart(2, "0")}`;
+    $$(".session-card", grid).forEach((c, j) => c.classList.toggle("active", j === i));
+
+    if (!s.video) { player.innerHTML = placeholder(s, "SESSION COMING SOON"); return; }
+
+    const id = youTubeId(s.video);
+    if (!autoplay) {
+      const cover = coverFor(s);
+      player.innerHTML = `<button class="player-poster" aria-label="Play ${esc(s.title)}">
+          ${cover ? `${backdrop(cover)}<img class="fit" src="${esc(cover)}" alt="">` : placeholder(s, "PRESS PLAY")}
+          <span class="big-play">▶</span></button>`;
+      $(".player-poster", player).addEventListener("click", () => showInPlayer(i, true));
+      return;
+    }
+    // Stop any riff / now-playing toast from the albums
+    stopAll(); current = null; np.classList.remove("show");
+    if (id) {
+      player.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&playsinline=1"
+        title="${esc(s.title)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+    } else {
+      player.innerHTML = `${s.poster ? backdrop(s.poster) : ""}<video src="${esc(s.video)}" ${s.poster ? `poster="${esc(s.poster)}"` : ""} controls autoplay playsinline preload="metadata"></video>`;
+    }
+  }
+
+  grid.innerHTML = SESSIONS.map((s, i) => {
+    const cover = coverFor(s);
+    return `<button class="session-card reveal" data-i="${i}" aria-label="${esc(s.title)}">
+        <div class="thumb">
+          ${s.video ? (cover ? `<img src="${esc(cover)}" alt="" loading="lazy" style="object-position:${esc(s.focus || "center")}">` : placeholder(s, "PLAY")) : placeholder(s, "COMING SOON")}
+          ${s.video ? `<span class="mini">▶</span>` : ""}
+        </div>
+        <h4>${esc(s.title)}</h4>
+        <p>${esc(s.info || "")}</p>
+      </button>`;
+  }).join("");
+  $$(".session-card", grid).forEach((card) => {
+    revealObserver.observe(card);
+    card.addEventListener("click", () => {
+      const i = +card.dataset.i;
+      showInPlayer(i, !!SESSIONS[i].video);
+      // Bring the player into view (just below the fixed nav bar) if it's off-screen.
+      const top = player.getBoundingClientRect().top;
+      const navH = nav.offsetHeight + 16;
+      if (top < navH || top > window.innerHeight * 0.5) {
+        window.scrollTo({ top: top + window.scrollY - navH, behavior: "smooth" });
+      }
+    });
+  });
+  showInPlayer(0, false);
 
   /* ---------- Contact form ---------- */
   const form = $("#contactForm");
