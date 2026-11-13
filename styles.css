@@ -29,6 +29,9 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
+/* Decorative pieces (album vinyls, tilted marquee) poke past the edge; clip them so phones don't widen the page. */
+main { overflow-x: hidden; }
+@supports (overflow: clip) { main { overflow-x: clip; } }
 a { color: inherit; text-decoration: none; }
 button { font: inherit; cursor: pointer; }
 ::selection { background: var(--red); color: var(--white); }
@@ -74,6 +77,7 @@ button { font: inherit; cursor: pointer; }
 .nav-links a:hover, .nav-links a.active { color: var(--white); }
 .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
 .burger { display: none; background: none; border: 0; width: 34px; height: 26px; position: relative; }
+.nav-links .menu-cta { display: none; }
 .burger span { position: absolute; left: 0; width: 100%; height: 2px; background: var(--white); transition: .3s; }
 .burger span:nth-child(1) { top: 2px; } .burger span:nth-child(2) { top: 12px; } .burger span:nth-child(3) { top: 22px; }
 .burger.open span:nth-child(1) { top: 12px; transform: rotate(45deg); background: var(--red); }
@@ -330,15 +334,36 @@ h2 em { font-style: normal; font-family: var(--script); font-size: .62em; vertic
   .about-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 860px) {
+  /* A backdrop-filter on the nav would trap the fixed full-screen menu inside the bar, so use a solid bar on mobile. */
+  .nav, .nav.scrolled { backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .nav.scrolled { background: rgba(10, 10, 10, .96); }
+  .nav.menu-open { background: transparent; border-bottom-color: transparent; }
+  .nav.menu-open .logo b, .nav.menu-open .logo-mark { color: var(--black); }
   .nav-cta { display: none; }
-  .burger { display: block; z-index: 2; }
+  .logo { position: relative; z-index: 2; }
+  .burger { display: block; z-index: 2; width: 44px; height: 44px; margin-right: -5px; }
+  .burger span { left: 5px; width: 34px; }
+  .burger span:nth-child(1) { top: 11px; } .burger span:nth-child(2) { top: 21px; } .burger span:nth-child(3) { top: 31px; }
+  .burger.open span:nth-child(1), .burger.open span:nth-child(3) { top: 21px; background: var(--white); }
   .nav-links {
-    position: fixed; inset: 0; flex-direction: column; align-items: center; justify-content: center; gap: 2rem;
-    background: var(--red); clip-path: circle(0 at calc(100% - 40px) 40px); transition: clip-path .6s cubic-bezier(.7,0,.3,1);
+    position: fixed; inset: 0; height: 100vh; height: 100dvh; z-index: 1;
+    flex-direction: column; align-items: center; justify-content: center; gap: 1.2rem;
+    padding: 6rem 1.5rem 3rem; overflow-y: auto; overscroll-behavior: contain;
+    background: var(--red); clip-path: circle(0 at calc(100% - 40px) 40px);
+    visibility: hidden; transition: clip-path .6s cubic-bezier(.7,0,.3,1), visibility 0s .6s;
   }
-  .nav-links.open { clip-path: circle(150% at calc(100% - 40px) 40px); }
-  .nav-links a { font-family: var(--display); font-size: 3rem; letter-spacing: .05em; color: var(--white); }
-  .nav-links a::after { background: var(--black); }
+  .nav-links.open { clip-path: circle(150% at calc(100% - 40px) 40px); visibility: visible; transition: clip-path .6s cubic-bezier(.7,0,.3,1), visibility 0s; }
+  .nav-links li { opacity: 0; transform: translateY(20px); transition: opacity .4s, transform .4s; }
+  .nav-links.open li { opacity: 1; transform: none; }
+  .nav-links.open li:nth-child(1) { transition-delay: .15s; } .nav-links.open li:nth-child(2) { transition-delay: .22s; }
+  .nav-links.open li:nth-child(3) { transition-delay: .29s; } .nav-links.open li:nth-child(4) { transition-delay: .36s; }
+  .nav-links.open li:nth-child(5) { transition-delay: .43s; }
+  .nav-links a { display: block; padding: .3rem 1rem; font-family: var(--display); font-size: clamp(2.4rem, 11vw, 3.4rem); line-height: 1.1; letter-spacing: .05em; color: var(--white); }
+  .nav-links a.active { color: var(--black); }
+  .nav-links a::after { background: var(--black); bottom: 0; }
+  .nav-links .menu-cta { display: block; margin-top: 1rem; }
+  .nav-links .menu-cta a, .nav-links .menu-cta a.active { background: var(--black); border-color: var(--black); color: var(--white); font-size: 1.3rem; padding: 1rem 2.4rem; }
+  .nav-links .menu-cta a::after { display: none; }
 
   .hero { grid-template-columns: 1fr; padding-top: 7rem; padding-bottom: 10rem; }
   .hero-red-slab { width: 100%; top: auto; height: 42%; clip-path: polygon(0 30%, 100% 0, 100% 100%, 0 100%); }
@@ -365,7 +390,9 @@ h2 em { font-style: normal; font-family: var(--script); font-size: .62em; vertic
   .member h3 { font-size: 1.4rem; }
   .stats { gap: .5rem; }
   .stats span { font-size: .62rem; letter-spacing: .12em; }
-  .hero-actions .btn { flex: 1; }
+  .hero-actions { gap: .7rem; }
+  .hero-actions .btn { flex: 1; padding: .9rem .8rem; font-size: 1.1rem; letter-spacing: .08em; white-space: nowrap; }
+  .scroll-cue { display: none; }
   .logo { font-size: 1.4rem; }
 }
 @media (prefers-reduced-motion: reduce) {

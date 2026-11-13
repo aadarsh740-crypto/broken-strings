@@ -16,11 +16,16 @@
   const setMenu = (open) => {
     burger.classList.toggle("open", open);
     links.classList.toggle("open", open);
+    nav.classList.toggle("menu-open", open);
     burger.setAttribute("aria-expanded", String(open));
+    burger.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    document.documentElement.style.overflow = open ? "hidden" : "";
     document.body.style.overflow = open ? "hidden" : "";
   };
   burger.addEventListener("click", () => setMenu(!links.classList.contains("open")));
   $$("a", links).forEach((a) => a.addEventListener("click", () => setMenu(false)));
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") setMenu(false); });
+  window.matchMedia("(min-width: 861px)").addEventListener("change", (e) => { if (e.matches) setMenu(false); });
 
   const sectionObserver = new IntersectionObserver(
     (entries) => {
