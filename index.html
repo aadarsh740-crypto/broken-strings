@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Broken Strings — Official Band Site</title>
+  <meta name="description" content="Broken Strings — loud guitars, heavy drums, and songs that snap. Home of the band." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;500;700&family=Rock+Salt&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ============ SVG SYMBOL LIBRARY (instruments) ============ -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <!-- Electric guitar -->
+      <symbol id="i-guitar" viewBox="0 0 200 520">
+        <rect x="88" y="20" width="24" height="48" rx="6" fill="currentColor"/>
+        <circle cx="82" cy="30" r="5" fill="currentColor"/><circle cx="82" cy="46" r="5" fill="currentColor"/><circle cx="82" cy="62" r="5" fill="currentColor"/>
+        <circle cx="118" cy="30" r="5" fill="currentColor"/><circle cx="118" cy="46" r="5" fill="currentColor"/><circle cx="118" cy="62" r="5" fill="currentColor"/>
+        <rect x="91" y="66" width="18" height="230" fill="currentColor" opacity=".85"/>
+        <g stroke="var(--bg-for-svg,#0a0a0a)" stroke-width="2" opacity=".6">
+          <line x1="91" y1="96" x2="109" y2="96"/><line x1="91" y1="126" x2="109" y2="126"/><line x1="91" y1="154" x2="109" y2="154"/>
+          <line x1="91" y1="180" x2="109" y2="180"/><line x1="91" y1="204" x2="109" y2="204"/><line x1="91" y1="226" x2="109" y2="226"/>
+          <line x1="91" y1="246" x2="109" y2="246"/><line x1="91" y1="264" x2="109" y2="264"/><line x1="91" y1="280" x2="109" y2="280"/>
+        </g>
+        <path d="M100 280c-22 0-30 18-34 34-6 22-34 20-44 44-14 34 0 74 22 96 26 26 70 40 96 22 18-12 30-34 34-58 4-26-6-44-22-58-12-10-10-26-14-40-6-24-18-40-38-40z" fill="currentColor"/>
+        <rect x="80" y="330" width="40" height="12" rx="3" fill="var(--bg-for-svg,#0a0a0a)"/>
+        <rect x="80" y="370" width="40" height="12" rx="3" fill="var(--bg-for-svg,#0a0a0a)"/>
+        <rect x="84" y="420" width="32" height="8" rx="2" fill="var(--bg-for-svg,#0a0a0a)"/>
+        <circle cx="140" cy="420" r="7" fill="var(--bg-for-svg,#0a0a0a)"/><circle cx="150" cy="446" r="7" fill="var(--bg-for-svg,#0a0a0a)"/>
+        <g stroke="var(--bg-for-svg,#0a0a0a)" stroke-width="1" opacity=".8">
+          <line x1="94" y1="66" x2="94" y2="424"/><line x1="97.5" y1="66" x2="97.5" y2="424"/><line x1="101" y1="66" x2="101" y2="424"/>
+          <line x1="104" y1="66" x2="104" y2="424"/><line x1="107" y1="66" x2="107" y2="424"/>
+        </g>
+      </symbol>
+
+      <!-- Microphone -->
+      <symbol id="i-mic" viewBox="0 0 120 260">
+        <rect x="30" y="10" width="60" height="96" rx="30" fill="currentColor"/>
+        <g stroke="var(--bg-for-svg,#0a0a0a)" stroke-width="3" opacity=".55">
+          <line x1="34" y1="40" x2="86" y2="40"/><line x1="32" y1="56" x2="88" y2="56"/><line x1="32" y1="72" x2="88" y2="72"/><line x1="34" y1="88" x2="86" y2="88"/>
+        </g>
+        <path d="M18 80v8a42 42 0 0 0 84 0v-8" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+        <rect x="55" y="130" width="10" height="100" fill="currentColor"/>
+        <rect x="26" y="228" width="68" height="12" rx="6" fill="currentColor"/>
+      </symbol>
+
+      <!-- Drum -->
+      <symbol id="i-drum" viewBox="0 0 240 200">
+        <ellipse cx="120" cy="60" rx="100" ry="28" fill="currentColor"/>
+        <ellipse cx="120" cy="60" rx="88" ry="20" fill="var(--bg-for-svg,#0a0a0a)" opacity=".25"/>
+        <path d="M20 60v80c0 16 45 30 100 30s100-14 100-30V60c0 16-45 30-100 30S20 76 20 60z" fill="currentColor" opacity=".85"/>
+        <g stroke="var(--bg-for-svg,#0a0a0a)" stroke-width="3" opacity=".6" fill="none">
+          <path d="M20 70 L60 160"/><path d="M60 88 L100 170"/><path d="M100 90 L140 170"/><path d="M140 90 L180 162"/><path d="M180 82 L220 140"/>
+          <path d="M60 160 L100 90"/><path d="M100 170 L140 90"/><path d="M140 170 L180 88"/><path d="M180 162 L218 76"/>
+        </g>
+        <line x1="150" y1="10" x2="230" y2="-20" stroke="currentColor" stroke-width="7" stroke-linecap="round" transform="translate(-30 40)"/>
+        <line x1="90" y1="10" x2="10" y2="-20" stroke="currentColor" stroke-width="7" stroke-linecap="round" transform="translate(30 40)"/>
+      </symbol>
+
+      <!-- Piano keys -->
+      <symbol id="i-keys" viewBox="0 0 280 120">
+        <rect x="0" y="0" width="280" height="120" rx="8" fill="currentColor"/>
+        <g fill="var(--bg-for-svg,#0a0a0a)">
+          <rect x="39" y="0" width="2" height="120"/><rect x="79" y="0" width="2" height="120"/><rect x="119" y="0" width="2" height="120"/>
+          <rect x="159" y="0" width="2" height="120"/><rect x="199" y="0" width="2" height="120"/><rect x="239" y="0" width="2" height="120"/>
+          <rect x="28" y="0" width="24" height="72" rx="3"/><rect x="68" y="0" width="24" height="72" rx="3"/>
+          <rect x="148" y="0" width="24" height="72" rx="3"/><rect x="188" y="0" width="24" height="72" rx="3"/><rect x="228" y="0" width="24" height="72" rx="3"/>
+        </g>
+      </symbol>
+
+      <!-- Vinyl -->
+      <symbol id="i-vinyl" viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="98" fill="#0a0a0a"/>
+        <g fill="none" stroke="#2a2a2a" stroke-width="1.2">
+          <circle cx="100" cy="100" r="88"/><circle cx="100" cy="100" r="80"/><circle cx="100" cy="100" r="72"/>
+          <circle cx="100" cy="100" r="64"/><circle cx="100" cy="100" r="56"/><circle cx="100" cy="100" r="48"/>
+        </g>
+        <path d="M100 2a98 98 0 0 1 70 29" stroke="#ffffff" stroke-opacity=".18" stroke-width="6" fill="none"/>
+        <circle cx="100" cy="100" r="34" fill="#d7141f"/>
+        <circle cx="100" cy="100" r="4" fill="#0a0a0a"/>
+      </symbol>
+
+      <!-- Snapped string mark -->
+      <symbol id="i-snap" viewBox="0 0 64 64">
+        <path d="M4 32h20l4-8 4 16 4-8M40 32h20" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <!-- ============ NAV ============ -->
+  <header class="nav" id="nav">
+    <a href="#home" class="logo" aria-label="Broken Strings home">
+      <svg class="logo-mark"><use href="#i-snap"/></svg>
+      <span>BROKEN<b>STRINGS</b></span>
+    </a>
+    <nav>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#home" class="active">Home</a></li>
+        <li><a href="#about">About Us</a></li>
+        <li><a href="#works">Our Works</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+    <a href="#contact" class="btn btn-small nav-cta">Book Us</a>
+    <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
+  </header>
+
+  <main>
+    <!-- ============ HERO / HOME ============ -->
+    <section class="hero" id="home">
+      <div class="hero-red-slab" aria-hidden="true"></div>
+      <div class="hero-grain" aria-hidden="true"></div>
+
+      <svg class="float-inst f-mic"><use href="#i-mic"/></svg>
+      <svg class="float-inst f-drum"><use href="#i-drum"/></svg>
+      <svg class="float-inst f-keys"><use href="#i-keys"/></svg>
+
+      <div class="hero-content">
+        <p class="eyebrow reveal">// New album "Six Wires Down" — out now</p>
+        <h1 class="hero-title reveal">
+          <span class="line">BROKEN</span>
+          <span class="line outline">STRINGS</span>
+        </h1>
+        <p class="hero-tag reveal">We play it loud until something <span class="script">snaps.</span></p>
+        <div class="hero-actions reveal">
+          <a href="#works" class="btn">▶ Listen Now</a>
+          <a href="#about" class="btn btn-ghost">Meet the Band</a>
+        </div>
+        <div class="eq reveal" aria-hidden="true">
+          <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <svg class="vinyl"><use href="#i-vinyl"/></svg>
+        <svg class="hero-guitar"><use href="#i-guitar"/></svg>
+      </div>
+
+      <!-- Pluckable strings -->
+      <div class="strings" id="strings" aria-label="Interactive guitar strings — hover or tap to play">
+        <div class="string" data-note="82.41"></div>
+        <div class="string" data-note="110.00"></div>
+        <div class="string" data-note="146.83"></div>
+        <div class="string" data-note="196.00"></div>
+        <div class="string" data-note="246.94"></div>
+        <div class="string broken" data-note="329.63"></div>
+      </div>
+      <p class="strings-hint">↑ hover / tap the strings — sound on</p>
+
+      <a href="#about" class="scroll-cue" aria-label="Scroll down"><span></span></a>
+    </section>
+
+    <!-- ============ MARQUEE ============ -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <span>LIVE LOUD</span><svg><use href="#i-snap"/></svg>
+        <span>PLAY HARD</span><svg><use href="#i-snap"/></svg>
+        <span>BREAK STRINGS</span><svg><use href="#i-snap"/></svg>
+        <span>NEW ALBUM OUT NOW</span><svg><use href="#i-snap"/></svg>
+        <span>LIVE LOUD</span><svg><use href="#i-snap"/></svg>
+        <span>PLAY HARD</span><svg><use href="#i-snap"/></svg>
+        <span>BREAK STRINGS</span><svg><use href="#i-snap"/></svg>
+        <span>NEW ALBUM OUT NOW</span><svg><use href="#i-snap"/></svg>
+      </div>
+    </div>
+
+    <!-- ============ ABOUT ============ -->
+    <section class="about" id="about">
+      <div class="section-head reveal">
+        <span class="kicker">01 — About Us</span>
+        <h2>Three souls.<br/>One <em>broken</em> sound.</h2>
+      </div>
+
+      <div class="about-grid">
+        <div class="about-text reveal">
+          <p class="lead">Born in a cramped garage with a borrowed amp and a guitar missing its high E, <strong>Broken Strings</strong> turned a mistake into a manifesto.</p>
+          <p>Since 2016 we've blended raw rock, blues grit and cinematic synths into songs that hit hard and stay long. Three albums, 400+ shows and countless snapped strings later — we're still chasing the noise that made us start.</p>
+          <div class="stats">
+            <div><b data-count="400">0</b><span>Live Shows</span></div>
+            <div><b data-count="3">0</b><span>Albums</span></div>
+            <div><b data-count="12">0</b><span>M+ Streams</span></div>
+          </div>
+        </div>
+
+        <div class="members">
+          <article class="member reveal">
+            <div class="member-art"><svg><use href="#i-mic"/></svg></div>
+            <h3>Adarsh</h3><p>Vocals</p>
+          </article>
+          <article class="member reveal">
+            <div class="member-art"><svg><use href="#i-guitar"/></svg></div>
+            <h3>Thejas</h3><p>Guitar</p>
+          </article>
+          <article class="member reveal">
+            <div class="member-art member-art-duo">
+              <svg class="duo-drum"><use href="#i-drum"/></svg>
+              <svg class="duo-keys"><use href="#i-keys"/></svg>
+            </div>
+            <h3>Aswin</h3><p>Drums · Keys</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ WORKS ============ -->
+    <section class="works" id="works">
+      <div class="section-head reveal">
+        <span class="kicker">02 — Our Works</span>
+        <h2>The <em>discography.</em></h2>
+      </div>
+
+      <div class="albums">
+        <article class="album reveal">
+          <div class="cover cover-1">
+            <svg class="cover-vinyl"><use href="#i-vinyl"/></svg>
+            <div class="cover-face"><svg><use href="#i-guitar"/></svg><span>SIX WIRES<br/>DOWN</span></div>
+          </div>
+          <div class="album-info">
+            <span class="year">2026 · LP</span>
+            <h3>Six Wires Down</h3>
+            <button class="play" aria-label="Play Six Wires Down">▶</button>
+          </div>
+        </article>
+
+        <article class="album reveal">
+          <div class="cover cover-2">
+            <svg class="cover-vinyl"><use href="#i-vinyl"/></svg>
+            <div class="cover-face"><svg><use href="#i-drum"/></svg><span>RED<br/>NOISE</span></div>
+          </div>
+          <div class="album-info">
+            <span class="year">2023 · LP</span>
+            <h3>Red Noise</h3>
+            <button class="play" aria-label="Play Red Noise">▶</button>
+          </div>
+        </article>
+
+        <article class="album reveal">
+          <div class="cover cover-3">
+            <svg class="cover-vinyl"><use href="#i-vinyl"/></svg>
+            <div class="cover-face"><svg><use href="#i-mic"/></svg><span>FEEDBACK<br/>HEART</span></div>
+          </div>
+          <div class="album-info">
+            <span class="year">2019 · LP</span>
+            <h3>Feedback Heart</h3>
+            <button class="play" aria-label="Play Feedback Heart">▶</button>
+          </div>
+        </article>
+      </div>
+
+      <div class="tracklist reveal">
+        <h3 class="tl-title">Top Tracks</h3>
+        <ol>
+          <li><span class="n">01</span><span class="t">Snap (The High E Song)</span><span class="a">Six Wires Down</span><span class="d">3:42</span><button class="mini-play" aria-label="Play">▶</button></li>
+          <li><span class="n">02</span><span class="t">Midnight Amplifier</span><span class="a">Red Noise</span><span class="d">4:15</span><button class="mini-play" aria-label="Play">▶</button></li>
+          <li><span class="n">03</span><span class="t">Static in My Veins</span><span class="a">Red Noise</span><span class="d">3:58</span><button class="mini-play" aria-label="Play">▶</button></li>
+          <li><span class="n">04</span><span class="t">Feedback Heart</span><span class="a">Feedback Heart</span><span class="d">5:01</span><button class="mini-play" aria-label="Play">▶</button></li>
+          <li><span class="n">05</span><span class="t">Paper Drums</span><span class="a">Six Wires Down</span><span class="d">3:27</span><button class="mini-play" aria-label="Play">▶</button></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ============ CONTACT ============ -->
+    <section class="contact" id="contact">
+      <svg class="contact-guitar" aria-hidden="true"><use href="#i-guitar"/></svg>
+      <div class="contact-wrap">
+        <div class="contact-info reveal">
+          <span class="kicker">03 — Contact</span>
+          <h2>Let's make<br/>some <em>noise.</em></h2>
+          <p>Bookings, collabs, press, or just want to say the last show broke you too? Drop us a line.</p>
+          <ul class="contact-list">
+            <li><span>Booking</span>booking@brokenstrings.band</li>
+            <li><span>Press</span>press@brokenstrings.band</li>
+            <li><span>Studio</span>Brokenstrings HQ, Live Lane</li>
+          </ul>
+          <div class="socials">
+            <a href="#" aria-label="Instagram">IG</a>
+            <a href="#" aria-label="YouTube">YT</a>
+            <a href="#" aria-label="Spotify">SP</a>
+            <a href="#" aria-label="X">X</a>
+          </div>
+        </div>
+
+        <form class="contact-form reveal" id="contactForm" novalidate>
+          <div class="field">
+            <input type="text" id="name" name="name" placeholder=" " required />
+            <label for="name">Your Name</label>
+          </div>
+          <div class="field">
+            <input type="email" id="email" name="email" placeholder=" " required />
+            <label for="email">Email Address</label>
+          </div>
+          <div class="field">
+            <select id="topic" name="topic" required>
+              <option value="" disabled selected hidden></option>
+              <option>Booking a show</option>
+              <option>Collaboration</option>
+              <option>Press / Interview</option>
+              <option>Fan mail</option>
+            </select>
+            <label for="topic">What's it about?</label>
+          </div>
+          <div class="field">
+            <textarea id="message" name="message" rows="4" placeholder=" " required></textarea>
+            <label for="message">Your Message</label>
+          </div>
+          <button type="submit" class="btn btn-dark btn-block">Send it loud →</button>
+          <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer">
+    <div class="footer-big">BROKEN STRINGS</div>
+    <div class="footer-row">
+      <span>© <span id="year"></span> Broken Strings. All rights reserved.</span>
+      <span>Made loud with <b>♥</b> & distortion.</span>
+      <a href="#home">Back to top ↑</a>
+    </div>
+  </footer>
+
+  <div class="now-playing" id="nowPlaying" aria-live="polite">
+    <div class="np-eq"><i></i><i></i><i></i><i></i></div>
+    <span id="npText">Now playing</span>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
