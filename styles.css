@@ -29,7 +29,7 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
-/* Decorative pieces (album vinyls, tilted marquee) poke past the edge; clip them so phones don't widen the page. */
+/* Decorative pieces (tilted marquee, hero art) poke past the edge; clip them so phones don't widen the page. */
 main { overflow-x: hidden; }
 @supports (overflow: clip) { main { overflow-x: clip; } }
 a { color: inherit; text-decoration: none; }
@@ -190,7 +190,7 @@ h2 em { font-style: normal; font-family: var(--script); font-size: .62em; vertic
 .lead { font-size: clamp(1.25rem, 2.2vw, 1.6rem); line-height: 1.45; margin-bottom: 1.4rem; font-weight: 500; }
 .lead strong { background: var(--black); padding: 0 .3em; }
 .about-text > p:not(.lead) { color: rgba(246,242,236,.86); }
-.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2.5rem; border-top: 2px solid var(--black); padding-top: 1.6rem; }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 2.5rem; border-top: 2px solid var(--black); padding-top: 1.6rem; }
 .stats b { display: block; font-family: var(--display); font-weight: 400; font-size: clamp(2.6rem, 5vw, 4rem); line-height: 1; color: var(--black); }
 .stats span { font-size: .75rem; letter-spacing: .2em; text-transform: uppercase; }
 
@@ -214,43 +214,25 @@ h2 em { font-style: normal; font-family: var(--script); font-size: .62em; vertic
 .works { background: var(--black); padding: clamp(6rem, 12vw, 10rem) var(--gutter); }
 .works .kicker { color: var(--red); }
 .works h2 em { color: var(--red); }
-.albums { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1.2rem, 3vw, 2.5rem); }
-.album { cursor: pointer; }
-.cover { position: relative; aspect-ratio: 1; margin-right: 12%; }
-.cover-vinyl { position: absolute; top: 4%; right: -14%; width: 92%; height: 92%; transition: transform .7s cubic-bezier(.2,.8,.2,1); }
-.album:hover .cover-vinyl, .album.playing .cover-vinyl { transform: translateX(14%) rotate(200deg); }
-.album.playing .cover-vinyl { animation: spin 2.5s linear infinite; }
-.cover-face {
-  position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between; padding: 1.4rem;
-  box-shadow: 0 25px 50px rgba(0,0,0,.6); overflow: hidden; transition: transform .4s;
-}
-.album:hover .cover-face { transform: translateY(-6px); }
-.cover-face svg { position: absolute; right: -8%; bottom: -12%; width: 70%; height: 90%; opacity: .9; transform: rotate(-24deg); }
-.cover-face span { position: relative; font-family: var(--display); font-size: clamp(1.8rem, 3.2vw, 2.8rem); line-height: .9; letter-spacing: .02em; }
-.cover-1 .cover-face { background: var(--red); --bg-for-svg: var(--red); }
-.cover-1 .cover-face svg { color: var(--black); }
-.cover-2 .cover-face { background: var(--white); color: var(--black); --bg-for-svg: var(--white); }
-.cover-2 .cover-face svg { color: var(--red); transform: rotate(-12deg); width: 85%; height: 70%; bottom: -6%; }
-.cover-3 .cover-face { background: repeating-linear-gradient(135deg, var(--black-3) 0 14px, var(--black-2) 14px 28px); border: 2px solid var(--red); --bg-for-svg: var(--black-2); }
-.cover-3 .cover-face svg { color: var(--red); width: 45%; transform: rotate(-14deg); }
-.album-info { display: grid; grid-template-columns: 1fr auto; align-items: center; margin-top: 1.4rem; margin-right: 12%; }
-.album-info .year { grid-column: 1; font-size: .75rem; letter-spacing: .2em; color: var(--red); font-weight: 700; }
-.album-info h3 { grid-column: 1; font-family: var(--display); font-weight: 400; font-size: 1.9rem; line-height: 1; }
-.play {
-  grid-column: 2; grid-row: 1 / span 2; width: 54px; height: 54px; border-radius: 50%;
-  background: var(--red); color: var(--white); border: 0; font-size: 1.1rem; transition: transform .25s, background .25s;
-}
-.play:hover { transform: scale(1.1); background: var(--white); color: var(--black); }
-.album.playing .play { background: var(--white); color: var(--black); }
 
-.tracklist { margin-top: clamp(4rem, 8vw, 6rem); }
+.tracklist { margin-top: 0; }
 .tl-title { font-family: var(--display); font-weight: 400; font-size: 2.4rem; letter-spacing: .04em; margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem; }
 .tl-title::after { content: ""; flex: 1; height: 2px; background: linear-gradient(90deg, var(--red), transparent); }
 .tracklist ol { list-style: none; }
 .tracklist li {
+  position: relative; cursor: pointer; --p: 0;
   display: grid; grid-template-columns: 3rem 1fr 1fr 4rem 2.6rem; align-items: center; gap: 1rem;
-  padding: 1rem .8rem; border-bottom: 1px solid rgba(246,242,236,.1); transition: background .25s, padding .25s;
+  padding: 1.3rem .8rem; border-bottom: 1px solid rgba(246,242,236,.1); transition: background .25s, padding .25s;
 }
+.tracklist .d { font-variant-numeric: tabular-nums; }
+/* Progress bar along the bottom of each track; tap it to jump to that point. */
+.tracklist .bar { position: absolute; left: 0; right: 0; bottom: -6px; height: 13px; cursor: pointer; z-index: 1; }
+.tracklist .bar::before, .tracklist .bar i { content: ""; position: absolute; left: 0; top: 5px; height: 3px; }
+.tracklist .bar::before { right: 0; background: transparent; transition: background .25s; }
+.tracklist .bar i { width: calc(var(--p) * 100%); background: var(--white); }
+.tracklist li.loaded .bar::before { background: rgba(10,10,10,.35); }
+.tracklist li.loaded:not(.playing) { background: rgba(215,20,31,.18); }
+.tracklist li.loaded:not(.playing) .bar i { background: var(--red); }
 .tracklist li:hover, .tracklist li.playing { background: var(--red); padding-left: 1.4rem; }
 .tracklist .n { font-family: var(--display); font-size: 1.4rem; color: var(--red); }
 .tracklist li:hover .n, .tracklist li.playing .n { color: var(--black); }
@@ -387,7 +369,6 @@ h2 em { font-style: normal; font-family: var(--script); font-size: .62em; vertic
 
 /* ---------- Responsive ---------- */
 @media (max-width: 1024px) {
-  .albums { grid-template-columns: repeat(2, 1fr); }
   .about-grid { grid-template-columns: 1fr; }
 }
 /* Five tabs don't fit beside the logo on narrower screens, so the ☰ menu takes over below 1100px. */
@@ -432,18 +413,17 @@ h2 em { font-style: normal; font-family: var(--script); font-size: .62em; vertic
   .f-keys, .f-drum { display: none; }
 
   .contact-wrap { grid-template-columns: 1fr; }
-  .tracklist li { grid-template-columns: 2.4rem 1fr 2.6rem; }
-  .tracklist .a, .tracklist .d { display: none; }
+  .tracklist li { grid-template-columns: 2.4rem 1fr auto 2.6rem; gap: .8rem; }
+  .tracklist .a { display: none; }
 }
 @media (max-width: 560px) {
-  .albums { grid-template-columns: 1fr; }
   .members { grid-template-columns: 1fr 1fr; gap: .8rem; }
   .members { padding-bottom: 0; }
   .member:nth-child(even), .member.reveal.in:nth-child(even) { transform: none; }
   .member:nth-child(even):hover { transform: translateY(-6px) rotate(1deg); }
   .member { padding: 1rem; }
   .member h3 { font-size: 1.4rem; }
-  .stats { gap: .5rem; }
+  .stats { grid-template-columns: 1fr 1fr; gap: 1.4rem .5rem; }
   .stats span { font-size: .62rem; letter-spacing: .12em; }
   .hero-actions { gap: .7rem; }
   .hero-actions .btn { flex: 1; padding: .9rem .8rem; font-size: 1.1rem; letter-spacing: .08em; white-space: nowrap; }

@@ -44,7 +44,7 @@
       entries.forEach((e) => {
         if (!e.isIntersecting) return;
         e.target.classList.add("in");
-        $$("[data-count]", e.target).forEach(countUp);
+        $$("[data-auto]", e.target).forEach(countUp);
         revealObserver.unobserve(e.target);
       });
     },
@@ -55,15 +55,23 @@
     revealObserver.observe(el);
   });
 
+  // Real numbers for the About stats, worked out from the page itself.
+  const FORMED_YEAR = 2017;
+  function statValue(key) {
+    if (key === "years") return Math.max(0, new Date().getFullYear() - FORMED_YEAR);
+    if (key === "tracks") return $$(".tracklist li[data-src]").length;
+    if (key === "sessions") return SESSIONS.filter((s) => s.video).length;
+    return 0;
+  }
+
   function countUp(el) {
-    const target = +el.dataset.count;
+    const target = statValue(el.dataset.auto);
     const start = performance.now();
-    const dur = 1600;
+    const dur = 1400;
     const tick = (t) => {
       const p = Math.min((t - start) / dur, 1);
       el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3)));
       if (p < 1) requestAnimationFrame(tick);
-      else el.textContent = target + (target >= 100 ? "+" : "");
     };
     requestAnimationFrame(tick);
   }
@@ -119,44 +127,74 @@
     if (el && el.classList.contains("string") && el !== lastHover) { strike(el); lastHover = el; }
   }, { passive: true });
 
-  /* ---------- Fake "play" for albums & tracks (short riff + toast) ---------- */
-  const riffs = [
-    [82.41, 110, 146.83, 110, 82.41, 98, 110, 123.47],
-    [110, 130.81, 146.83, 164.81, 146.83, 130.81, 110, 98],
-    [146.83, 196, 220, 196, 164.81, 146.83, 130.81, 146.83],
-  ];
+  /* ---------- "Now playing" pop-up ---------- */
   const np = $("#nowPlaying");
   const npText = $("#npText");
-  let npTimer;
-  let current = null;
 
-  function stopAll() {
-    $$(".album.playing, .tracklist li.playing").forEach((el) => {
-      el.classList.remove("playing");
-      const b = $(".play, .mini-play", el);
-      if (b) b.textContent = "▶";
+  /* ---------- Our Tracks: real audio ---------- */
+  const audioEl = new Audio();
+  audioEl.preload = "none";
+  const trackRows = $$(".tracklist li[data-src]");
+  let trackRow = null; // row whose file is loaded in audioEl
+  const fmt = (s) => (isFinite(s) ? `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}` : "0:00");
+
+  function pauseTrack() { if (!audioEl.paused) audioEl.pause(); }
+  function pauseSessionVideo() { const v = $("#player video"); if (v && !v.paused) v.pause(); }
+
+  function paintTracks() {
+    trackRows.forEach((li) => {
+      const isCurrent = li === trackRow;
+      const playing = isCurrent && !audioEl.paused;
+      li.classList.toggle("playing", playing);
+      li.classList.toggle("loaded", isCurrent);
+      const btn = $(".mini-play", li);
+      btn.textContent = playing ? "❚❚" : "▶";
+      btn.setAttribute("aria-label", `${playing ? "Pause" : "Play"} ${$(".t", li).textContent}`);
+      if (!isCurrent) { $(".d", li).textContent = $(".d", li).dataset.total; li.style.setProperty("--p", 0); }
     });
   }
 
-  function play(el, title, riffIndex) {
-    if (current === el) { stopAll(); current = null; np.classList.remove("show"); return; }
-    stopAll();
-    current = el;
-    el.classList.add("playing");
-    const b = $(".play, .mini-play", el);
-    if (b) b.textContent = "❚❚";
-    npText.textContent = `Now playing — ${title}`;
-    np.classList.add("show");
-    try { riffs[riffIndex % riffs.length].forEach((f, i) => pluck(f, i * 0.22, 0.28, 1.2)); } catch (_) {}
-    clearTimeout(npTimer);
-    npTimer = setTimeout(() => { stopAll(); current = null; np.classList.remove("show"); }, 4500);
+  function toggleTrack(li) {
+    if (trackRow === li) {
+      if (audioEl.paused) audioEl.play().catch(() => {}); else audioEl.pause();
+      return;
+    }
+    trackRow = li;
+    audioEl.src = li.dataset.src;
+    audioEl.play().catch(() => {});
+    paintTracks();
   }
 
-  $$(".album").forEach((album, i) => {
-    album.addEventListener("click", () => play(album, $("h3", album).textContent, i));
+  audioEl.addEventListener("play", () => {
+    pauseSessionVideo();
+    npText.textContent = `Now playing — ${$(".t", trackRow).textContent}`;
+    np.classList.add("show");
+    if ("mediaSession" in navigator) {
+      navigator.mediaSession.metadata = new MediaMetadata({ title: $(".t", trackRow).textContent, artist: "Broken Strings" });
+    }
+    paintTracks();
   });
-  $$(".tracklist li").forEach((li, i) => {
-    $(".mini-play", li).addEventListener("click", () => play(li, $(".t", li).textContent, i));
+  audioEl.addEventListener("pause", () => { np.classList.remove("show"); paintTracks(); });
+  audioEl.addEventListener("timeupdate", () => {
+    if (!trackRow) return;
+    const p = audioEl.duration ? audioEl.currentTime / audioEl.duration : 0;
+    trackRow.style.setProperty("--p", p);
+    $(".d", trackRow).textContent = fmt(audioEl.currentTime);
+  });
+  audioEl.addEventListener("ended", () => {
+    const next = trackRows[trackRows.indexOf(trackRow) + 1];
+    if (next) toggleTrack(next);
+    else { trackRow = null; paintTracks(); np.classList.remove("show"); }
+  });
+
+  trackRows.forEach((li) => {
+    // Tap anywhere on the row to play/pause, except on the progress bar (that seeks).
+    li.addEventListener("click", (e) => { if (!e.target.closest(".bar")) toggleTrack(li); });
+    $(".bar", li).addEventListener("click", (e) => {
+      if (trackRow !== li) { toggleTrack(li); return; }
+      const r = e.currentTarget.getBoundingClientRect();
+      if (audioEl.duration) audioEl.currentTime = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) * audioEl.duration;
+    });
   });
 
   /* ---------- Our Sessions (videos) ----------
@@ -211,13 +249,15 @@
       $(".player-poster", player).addEventListener("click", () => showInPlayer(i, true));
       return;
     }
-    // Stop any riff / now-playing toast from the albums
-    stopAll(); current = null; np.classList.remove("show");
+    // Pause any song that is playing
+    np.classList.remove("show");
+    pauseTrack();
     if (id) {
       player.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&playsinline=1"
         title="${esc(s.title)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
     } else {
       player.innerHTML = `${s.poster ? backdrop(s.poster) : ""}<video src="${esc(s.video)}" ${s.poster ? `poster="${esc(s.poster)}"` : ""} controls autoplay playsinline preload="metadata"></video>`;
+      $("video", player).addEventListener("play", pauseTrack);
     }
   }
 
@@ -246,6 +286,9 @@
     });
   });
   showInPlayer(0, false);
+
+  // Fill the About stats right away too, in case the count-up animation never runs.
+  $$("[data-auto]").forEach((el) => { el.textContent = statValue(el.dataset.auto); });
 
   /* ---------- Contact form ---------- */
   const form = $("#contactForm");
